@@ -8,7 +8,7 @@ namespace Drupal\{{module}};
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 /**
- * Provides an interface defining an entity.
+ * Provides an interface defining a {{entity_label}} entity.
  */
 interface {{class_name}}Interface extends EntityInterface {
   /**
@@ -28,15 +28,15 @@ interface {{class_name}}Interface extends EntityInterface {
    *   The UUID of the entity.
    */
   public function uuid();
-  {% for field in fields %}
+{% for field in fields %}
   /**
-   * Return the Value of {{field.name}} Field.
+   * Return the Value of {{field.label}} Field.
    *
    * @return {{field.type}}
    *   The content of the field.
    */
   public function get{{field.class}}();
-  {% endfor %}
+{% endfor %}
   /**
    * Defines the base fields of the entity type.
    *

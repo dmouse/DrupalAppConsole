@@ -11,20 +11,20 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListController;
 
 /**
- * Provides a list controller for entity.
+ * Provides a list controller for {{entity_label}} entity.
  */
-class {{class_name}ListController extends EntityListController {
+class {{class_name}}ListController extends EntityListController {
 
   /**
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['id'] = t('Entity ID');
+    $header['id'] = t('{{entity_label}} ID');
     $header['label'] = t('Label');
 
-    {% for field in fields %}
-    $header['{{field.class | lower}}'] = t('{{field.name');
-    {% endfor %}
+{% for field in fields %}
+    $header['{{field.name}}'] = t('{{field.label}}');
+{% endfor %}
 
     return $header + parent::buildHeader();
   }
@@ -36,7 +36,11 @@ class {{class_name}ListController extends EntityListController {
     /* @var $entity \Drupal\{{module}}\Entity\{{class_name}} */
     $row['id'] = $entity->id();
     $row['label'] = l($this->getLabel($entity), '{{entity_name}}/' . $entity->id());
-    $row['{{field.class | lower}}'] = $entity->get{{field.class}}();
+    
+{% for field in fields %}
+    $row['{{field.name}}'] = $entity->get{{field.class}}();
+{% endfor %}
+
     return $row + parent::buildRow($entity);
   }
 }

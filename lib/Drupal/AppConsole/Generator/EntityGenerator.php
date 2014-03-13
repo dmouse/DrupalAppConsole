@@ -12,7 +12,7 @@ class EntityGenerator extends Generator {
 
   public function __construct() {}
 
-  public function generate($module, $entity_name, $class_name, $fields) {
+  public function generate($module, $entity_label, $entity_name, $entity_identifier, $class_name, $fields) {
 
     $path = DRUPAL_ROOT . '/' . drupal_get_path('module', $module);
     
@@ -23,7 +23,9 @@ class EntityGenerator extends Generator {
 
     $parameters = array(
       'module' => $module,
+      'entity_label' => $entity_label,
       'entity_name' => $entity_name,
+      'entity_identifier' => $entity_identifier,
       'class_name' => $class_name,
       'fields' => $fields,
     );

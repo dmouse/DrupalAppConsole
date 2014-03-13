@@ -24,7 +24,9 @@ class GeneratorEntityCommand extends GeneratorCommand {
   protected function configure() {
     $this->setDefinition([
       new InputOption('module','',InputOption::VALUE_REQUIRED, 'The name of the module'),
+      new InputOption('entity_label','',InputOption::VALUE_REQUIRED, 'The label of the entity'),
       new InputOption('entity_name','',InputOption::VALUE_REQUIRED, 'The name of the entity'),
+      new InputOption('entity_identifier','',InputOption::VALUE_REQUIRED, 'The id field name of the entity'),
       new InputOption('class_name','',InputOption::VALUE_REQUIRED, 'The class name of the entity'),
       new InputOption('fields','',InputOption::VALUE_OPTIONAL, 'Create additinal fields in an entity'),
     ])
@@ -50,12 +52,14 @@ class GeneratorEntityCommand extends GeneratorCommand {
     }
 
     $module = $input->getOption('module');
-    $entity_name = $input->getOption('entity_name'));
+    $entity_label = $input->getOption('entity_label');
+    $entity_name = $input->getOption('entity_name');
+    $entity_identifier = $input->getOption('entity_identifier');
     $class_name = $input->getOption('class_name');
     $fields = $input->getOption('fields');
 
     $generator = $this->getGenerator();
-    $generator->generate($module, $entity_name, $class_name, $fields);
+    $generator->generate($module, $entity_label, $entity_name, $entity_identifier, $class_name, $fields);
 
     $errors = [];
 
@@ -88,10 +92,20 @@ class GeneratorEntityCommand extends GeneratorCommand {
     );
     $input->setOption('module', $module);
 
+    // Entity label
+    $entity_label = $this->getName();
+    $entity_label = $dialog->ask($output, $dialog->getQuestion('Enter the entity label', 'Foo Bar'), 'Foo Bar');
+    $input->setOption('entity_label', $entity_label);
+
     // Entity name
     $entity_name = $this->getName();
     $entity_name = $dialog->ask($output, $dialog->getQuestion('Enter the entity name', 'foo_bar'), 'foo_bar');
     $input->setOption('entity_name', $entity_name);
+
+    // Entity identifier
+    $entity_identifier = $this->getName();
+    $entity_identifier = $dialog->ask($output, $dialog->getQuestion('Enter the id field name of the entity', 'fbid'), 'fbid');
+    $input->setOption('entity_identifier', $entity_identifier);
 
     // Class name
     $class_name = $this->getName();
@@ -109,45 +123,54 @@ class GeneratorEntityCommand extends GeneratorCommand {
       );
       $fields = array();
       while(true){
-        // Field name
-        $field_name = $dialog->ask(
+        // Field label
+        $field_label = $dialog->ask(
           $output,
-          $dialog->getQuestion('  Field name','',':'),
+          $dialog->getQuestion('  Field label',null,':'),
           null
         );
 
         // break if is blank
-        if ($field_name == null) {
+        if ($field_label == null) {
           break;
         }
+
+        // Field name
+        $field_name_default = str_replace(' ', '_', strtolower($field_label));
+        $field_name = $dialog->ask(
+          $output,
+          $dialog->getQuestion('  Field name',$field_name_default,':'),
+          $field_name_default
+        );
 
         // Field description
         $field_description = $dialog->ask(
           $output,
-          $dialog->getQuestion('  Field description','',':'),
-          null
+          $dialog->getQuestion('  Field description','foo bar description',':'),
+          'foo bar description'
         );
 
         // Field class
         $field_class = $dialog->ask(
           $output,
-          $dialog->getQuestion('  Field class', '', ':'),
-          null
+          $dialog->getQuestion('  Field class', 'FooBarField', ':'),
+          'FooBarField'
         );
 
         // Field type
         $field_type = $d->askAndValidate(
           $output,
-          $dialog->getQuestion('  Field type'),
+          $dialog->getQuestion('  Field type', 'string', ':'),
           function($input) use ($field_types){
             return $input;
           },
           false,
-          null,
+          'string',
           $field_types
         );
 
         array_push($fields, array(
+          'label'       => $field_label,
           'name'        => $field_name,
           'description' => $field_description,
           'type'        => $field_type,
