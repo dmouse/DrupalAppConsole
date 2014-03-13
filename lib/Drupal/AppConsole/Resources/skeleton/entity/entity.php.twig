@@ -1,0 +1,148 @@
+<?php
+/**
+ * @file
+ * Contains \Drupal\{{module}}\Entity\{{class_name}}.
+ */
+
+namespace Drupal\{{module}}\Entity;
+use Drupal\Core\Entity\EntityStorageControllerInterface;
+use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\{{module}}\{{class_name}}Interface;
+use Drupal\Core\Entity\EntityTypeInterface;
+/**
+ * Defines the entity.
+ *
+ * @ContentEntityType(
+ *   id = "{{entity_name}}",
+ *   label = @Translation("{{class_name}} entity"),
+ *   controllers = {
+ *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "list" = "Drupal\{{module}}\Entity\Controller\{{class_name}}ListController",
+ *
+ *     "form" = {
+ *       "add" = "Drupal\{{module}}\Entity\Form\{{class_name}}FormController",
+ *       "edit" = "Drupal\{{module}}\Entity\Form\{{class_name}}FormController",
+ *       "delete" = "Drupal\{{module}}\Entity\Form\{{class_name}}DeleteForm",
+ *     },
+ *     "translation" = "Drupal\content_translation\ContentTranslationController"
+ *   },
+ *   base_table = "{{entity_name}}",
+ *   admin_permission = "admin_{{entity_name}}",
+ *   fieldable = TRUE,
+ *   translatable = TRUE,
+ *   entity_keys = {
+ *     "id" = "eid",
+ *     "label" = "name",
+ *     "uuid" = "uuid"
+ *   },
+ *   links = {
+ *     "edit-form" = "{{entity_name}}.edit",
+ *     "admin-form" = "{{entity_name}}.settings",
+ *     "delete-form" = "{{entity_name}}.delete"
+ *   }
+ * )
+ */
+class {{class_name}} extends ContentEntityBase implements {{class_name}}Interface {
+  /**
+   * {@inheritdoc}
+   */
+  public function id() {
+    return $this->get('eid')->value;
+  }
+
+  {% for field in fields %}
+  /**
+   * {@inheritdoc}
+   */
+  public function get{{field.class}}() {
+    return $this->{{field.class | lower}}->value;
+  }
+  {% endfor %}
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function preCreate(EntityStorageControllerInterface $storage_controller, array &$values) {
+    parent::preCreate($storage_controller, $values);
+    $values += array(
+      'user_id' => \Drupal::currentUser()->id(),
+    );
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+    $fields['eid'] = FieldDefinition::create('integer')
+      ->setLabel(t('ID'))
+      ->setDescription(t('The ID of the entity.'))
+      ->setReadOnly(TRUE);
+    $fields['uuid'] = FieldDefinition::create('uuid')
+      ->setLabel(t('UUID'))
+      ->setDescription(t('The UUID of the entity.'))
+      ->setReadOnly(TRUE);
+    $fields['langcode'] = FieldDefinition::create('language')
+      ->setLabel(t('Language code'))
+      ->setDescription(t('The language code of the entity.'));
+    $fields['name'] = FieldDefinition::create('string')
+      ->setLabel(t('Name'))
+      ->setDescription(t('The name of the entity.'))
+      ->setTranslatable(TRUE)
+      ->setPropertyConstraints('value', array('Length' => array('max' => 32)))
+      ->setSettings(array(
+        'default_value' => '',
+        'max_length' => 255,
+        'text_processing' => 0,
+      ))
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'string',
+        'weight' => -6,
+      ))
+      ->setDisplayOptions('form', array(
+        'type' => 'string',
+        'weight' => -6,
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['type'] = FieldDefinition::create('string')
+      ->setLabel(t('Type'))
+      ->setDescription(t('The bundle of the FooBar entity.'))
+      ->setRequired(TRUE);
+
+    $fields['user_id'] = FieldDefinition::create('entity_reference')
+      ->setLabel(t('User ID'))
+      ->setDescription(t('The ID of the associated user.'))
+      ->setSettings(array('target_type' => 'user'))
+      ->setTranslatable(TRUE);
+
+    {% for field in fields %}
+    $fields['{{field.class | lower}}'] = FieldDefinition::create('{{field.type}}')
+      ->setLabel(t('{{field.name}}'))
+      ->setDescription(t('{{field.description}}'))
+      ->setTranslatable(TRUE)
+      ->setPropertyConstraints('value', array('Length' => array('max' => 32)))
+      ->setSettings(array(
+        'default_value' => '',
+        'max_length' => 255,
+        'text_processing' => 0,
+      ))
+      ->setDisplayOptions('view', array(
+        'label' => 'Above',
+        'type' => 'string',
+        'weight' => -5,
+      ))
+      ->setDisplayOptions('form', array(
+        'type' => 'string',
+        'weight' => -5,
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+    {% endfor %}
+
+    return $fields;
+  }
+}

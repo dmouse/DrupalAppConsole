@@ -12,6 +12,7 @@ use Drupal\AppConsole\Command\GeneratorModuleCommand;
 use Drupal\AppConsole\Command\GeneratorControllerCommand;
 use Drupal\AppConsole\Command\GeneratorFormCommand;
 use Drupal\AppConsole\Command\GeneratorPluginBlockCommand;
+use Drupal\AppConsole\Command\GeneratorEntityCommand;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Finder\Finder;
@@ -36,6 +37,7 @@ $application->addCommands(array(
   new GeneratorControllerCommand(),
   new GeneratorFormCommand(),
   new GeneratorPluginBlockCommand(),
+  new GeneratorEntityCommand(),
 ));
 
 $application->run();
