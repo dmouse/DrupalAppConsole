@@ -56,7 +56,7 @@ class {{class_name}} extends ContentEntityBase implements {{class_name}}Interfac
    * {@inheritdoc}
    */
   public function get{{field.class}}() {
-    return $this->{{field.name | lower}}->value;
+    return $this->{{field.name}}->value;
   }
 {% endfor %}
 

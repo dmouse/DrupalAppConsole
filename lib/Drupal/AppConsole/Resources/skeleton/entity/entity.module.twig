@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * @file
+ * Contains Drupal\{{module}}\{{module}}.module
+ */
+
+/**
+ * Implements hook_menu_link_defaults().
+ */
+function {{module}}_menu_link_defaults() {
+  $links = array();
+  $links['{{entity_name}}.admin.structure.settings'] = array(
+    'link_title' => '{{entity_label}} Settings',
+    'description' => 'Configure {{entity_label}} entity',
+    'route_name' => '{{entity_name}}.settings',
+    'parent' => 'system.admin.structure',
+  );
+  $links['{{entity_name}}.list'] = array(
+    'link_title' => '{{entity_label}} Listing',
+    'description' => 'List {{entity_label}} content',
+    'route_name' => '{{entity_name}}.list',
+  );
+  return $links;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function {{module}}_permission() {
+  return array(
+    'delete_{{entity_name}}' => array(
+      'title' => t('Delete {{entity_label}} content.'),
+    ),
+    'add_{{entity_name}}' => array(
+      'title' => t('Add {{entity_label}} content'),
+    ),
+    'view_{{entity_name}}' => array(
+      'title' => t('View {{entity_label}} content'),
+    ),
+    'edit_{{entity_name}}' => array(
+      'title' => t('Edit {{entity_label}} content'),
+    ),
+    'admin_{{entity_name}}' => array(
+      'title' => t('Administer {{entity_label}} settings'),
+    ),
+  );
+}
