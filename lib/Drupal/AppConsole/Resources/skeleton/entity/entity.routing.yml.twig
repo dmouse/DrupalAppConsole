@@ -1,5 +1,5 @@
 {{entity_name}}.view:
-  path: '/{{entity_name}}/{{{entity_name}}}'
+  path: '/{{entity_name}}/{{ '{' ~ entity_name ~ '}' }}'
   defaults:
     _entity_view: '{{entity_name}}'
     _title: '{{entity_label}} Content'
@@ -20,14 +20,14 @@
   requirements:
     _permission: 'add_{{entity_name}}'
 {{entity_name}}.edit:
-  path: '/{{entity_name}}/{{{entity_name}}}/edit'
+  path: '/{{entity_name}}/{{ '{' ~ entity_name~ '}' }}/edit'
   defaults:
     _entity_form: {{entity_name}}.edit
     _title: 'Edit {{entity_label}} content'
   requirements:
     _permission: 'edit_{{entity_name}}'
 {{entity_name}}.delete:
-  path: '/{{entity_name}}/{{{entity_name}}}/delete'
+  path: '/{{entity_name}}/{{ '{' ~ entity_name~ '}'}}/delete'
   defaults:
     _entity_form: {{entity_name}}.delete
     _title: 'Delete {{entity_label}} Content '

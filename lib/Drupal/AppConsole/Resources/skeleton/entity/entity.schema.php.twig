@@ -1,17 +1,8 @@
 <?php
-/**
- * @file
- * Install routines for {{module}} module.
- */
-
-/**
- * Implements hook_schema().
- */
-function {{module}}_schema() {
   $schema['{{entity_name}}'] = array(
     'description' => 'Stores {{entity_label}} items.',
     'fields' => array(
-      '{{entity_identifier' => array(
+      '{{entity_identifier}}' => array(
         'type' => 'serial',
         'not null' => TRUE,
         'description' => 'Primary Key: Unique {{entity_label}} item ID.',
@@ -65,5 +56,3 @@ function {{module}}_schema() {
       'uuid' => array('uuid'),
     ),
   );
-  return $schema;
-}
