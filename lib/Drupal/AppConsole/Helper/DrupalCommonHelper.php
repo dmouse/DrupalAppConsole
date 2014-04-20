@@ -4,7 +4,7 @@
  * Contains \Drupal\AppConsole\Command\Helper\DrupalBootstrapHelper.
  */
 
-namespace Drupal\AppConsole\Command\Helper;
+namespace Drupal\AppConsole\Helper;
 
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -15,11 +15,13 @@ class DrupalCommonHelper extends Helper implements HelperInterface{
   /**
    * @see \Symfony\Component\Console\Helper\HelperInterface::getName()
    */
-  public function getName() {
+  public function getName() 
+  {
     return 'drupal_common';
   }
 
-  public function getDrupalGetPath($type, $name){
+  public function getDrupalGetPath($type, $name)
+  {
     return \drupal_get_path($type, $name);
   }
 

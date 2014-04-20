@@ -1,14 +1,20 @@
 <?php
-namespace Drupal\AppConsole\Command\Helper;
+/**
+ * File content
+ * Drupal\AppConsole\Helper\BootstrapFinderHelper
+ */
 
-use \Symfony\Component\Console\Output\OutputInterface;
-use \Symfony\Component\Console\Helper\ProgressHelper;
-use \Symfony\Component\Console\Helper\Helper;
-use \Symfony\Component\Finder\Finder;
+namespace Drupal\AppConsole\Helper;
+
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\ProgressHelper;
+use Symfony\Component\Console\Helper\Helper;
+use Symfony\Component\Finder\Finder;
 use \InvalidArgumentException;
 use \SplFileInfo;
 
-class BootstrapFinderHelper extends Helper {
+class BootstrapFinderHelper extends Helper 
+{
 
   /**
    * @var Finder
@@ -18,35 +24,33 @@ class BootstrapFinderHelper extends Helper {
   /**
    * @param Finder $finder
    */
-  public function __construct(Finder $finder) {
+  public function __construct(Finder $finder) 
+  {
     $this->finder = $finder;
   }
 
-  public function findBootstrapFile(OutputInterface $output) {
-    $output->writeln('<info>Finding bootstrap.inc file...</info>');
-
+  /**
+   * @param  Symfony\Component\Console\Output\OutputInterface $output
+   * @return string  Path to bootstrap file
+   */
+  public function findBootstrapFile(OutputInterface $output) 
+  {
     $currentPath = getcwd() . '/';
     $relativePath = '';
     $filesFound = 0;
 
     while ($filesFound === 0) {
       $path = $currentPath . $relativePath . 'core/includes';
-      $output->writeln("Searching in <info>$path</info>");
-
+    
       try {
-
         $iterator = $this->finder
                          ->files()
                          ->name('bootstrap.inc')
                          ->in($path);
-
         $filesFound = $iterator->count();
-
       } catch (InvalidArgumentException $e) {
         $relativePath .= '../';
-
         if (realpath($currentPath . $relativePath) === '/') {
-
           throw new InvalidArgumentException('Cannot find Drupal boostrap file.');
         }
       }
@@ -56,13 +60,15 @@ class BootstrapFinderHelper extends Helper {
       $bootstrapRealPath = $file->getRealpath();
       break;
     }
-    $output->writeln('<info>File bootstrap.inc file found!</info>');
 
     return $bootstrapRealPath;
   }
 
-  public function getName() {
-
+  /**
+   * @see \Symfony\Component\Console\Helper\HelperInterface::getName()
+   */
+  public function getName() 
+  {
     return 'finder';
   }
 }

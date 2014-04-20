@@ -1,13 +1,14 @@
 <?php
+
 use Drupal\Core\DrupalKernel;
 use Drupal\AppConsole\Console\Shell;
 use Drupal\AppConsole\Console\Application;
 use Drupal\AppConsole\Command\Helper\ShellHelper;
 use Drupal\AppConsole\Command\Helper\DialogHelper;
-use Drupal\AppConsole\Command\Helper\KernelHelper;
-use Drupal\AppConsole\Command\Helper\DrupalBootstrapHelper;
-use Drupal\AppConsole\Command\Helper\BootstrapFinderHelper;
-use Drupal\AppConsole\Command\Helper\DrupalCommonHelper;
+use Drupal\AppConsole\Helper\KernelHelper;
+use Drupal\AppConsole\Helper\DrupalBootstrapHelper;
+use Drupal\AppConsole\Helper\BootstrapFinderHelper;
+use Drupal\AppConsole\Helper\DrupalCommonHelper;
 use Drupal\AppConsole\Command\Helper\RegisterCommands;
 use Drupal\AppConsole\Command\GeneratorModuleCommand;
 use Drupal\AppConsole\Command\GeneratorControllerCommand;
