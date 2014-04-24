@@ -18,8 +18,10 @@ class DrupalBootstrapHelper extends Helper
    */
   public function bootstrapConfiguration($pathToBootstrapFile) 
   {
+    if ($pathToBootstrapFile){
       require_once $pathToBootstrapFile;
       \drupal_bootstrap(DRUPAL_BOOTSTRAP_CONFIGURATION);
+    }
   }
 
   // ToDo: Evaluate delete this function, becuase was replaced by bootstrapCode

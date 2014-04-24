@@ -51,7 +51,7 @@ class BootstrapFinderHelper extends Helper
       } catch (InvalidArgumentException $e) {
         $relativePath .= '../';
         if (realpath($currentPath . $relativePath) === '/') {
-          throw new InvalidArgumentException('Cannot find Drupal boostrap file.');
+          return false;
         }
       }
     }

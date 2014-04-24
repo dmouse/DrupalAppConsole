@@ -77,10 +77,9 @@ class Application extends BaseApplication {
     $drupalBoostrap = $this->getHelperSet()->get('bootstrap');
     $bootstrapFile = $input->getParameterOption(array('--bootstrap-file', '-b'));
     if (!$bootstrapFile) {
-      //$bootstrapFile = $this->getHelperSet()->get('finder')->findBootstrapFile($output);
+      $bootstrapFile = $this->getHelperSet()->get('finder')->findBootstrapFile($output);
     }
-
-    //$drupalBoostrap->bootstrapConfiguration($bootstrapFile);
+    $drupalBoostrap->bootstrapConfiguration($bootstrapFile);
   }
 
   protected function initDebug(InputInterface $input) 
