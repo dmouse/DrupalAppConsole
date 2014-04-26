@@ -8,9 +8,11 @@ namespace Drupal\AppConsole\Generator;
 
 use Symfony\Component\DependencyInjection\Container;
 
-class ModuleGenerator extends Generator {
+class ModuleGenerator extends Generator 
+{
 
-  public function generate($module, $dir, $description, $core, $package, $controller, $tests, $setting, $structure, $skip_root){
+  public function generate($module, $dir, $description, $core, $package, $structure, $skip_root)
+  {
 
     $dir .= '/' . $module;
     if (file_exists($dir)) {
@@ -65,42 +67,16 @@ class ModuleGenerator extends Generator {
       $this->renderFile('module/module.module.twig', $dir.'/'.$module.'.module', $parameters);
     }
 
-    if ($setting) {
-      $this->renderFile('module/module.settings.yml.twig', $dir.'/config/'.$module.'.settings.yml',$parameters);
-    }
-
-    if ($controller){
-      $name = 'DefaultController';
-      $parameters['name'] = $name;
-      $this->renderFile(
-          'module/module.controller.php.twig',
-          $dir.'/lib/Drupal/'.$module.'/Controller/'.$name.'.php',
-          $parameters
-      );
-
-      $this->renderFile('module/controller-routing.yml.twig', $dir.'/'.$module.'.routing.yml', $parameters);
-    }
-
-    if ($tests){
-      $this->renderFile(
-        'module/module.tests.twig',
-        $dir.'/lib/Drupal/'.$module.'/Tests/'. $module .'Test.php',
-        $parameters
-      );
-    }
-
     if ($structure) {
-      drupal_mkdir($dir.'/templates');
-      drupal_mkdir($dir.'/config');
-      drupal_mkdir($dir.'/tests');
-      drupal_mkdir($dir.'/lib');
-      drupal_mkdir($dir.'/lib/Drupal');
-      drupal_mkdir($dir.'/lib/Drupal/'.$module);
-      drupal_mkdir($dir.'/lib/Drupal/'.$module.'/Controller');
-      drupal_mkdir($dir.'/lib/Drupal/'.$module.'/Form');
-      drupal_mkdir($dir.'/lib/Drupal/'.$module.'/Plugin');
-      drupal_mkdir($dir.'/lib/Drupal/'.$module.'/Plugin/Block');
-      drupal_mkdir($dir.'/lib/Drupal/'.$module.'/Tests');
+      mkdir($dir.'/templates');
+      mkdir($dir.'/config');
+      mkdir($dir.'/tests');
+      mkdir($dir.'/lib');
+      mkdir($dir.'/lib/Drupal');
+      mkdir($dir.'/lib/Drupal/'.$module);
+      mkdir($dir.'/lib/Drupal/'.$module.'/Controller');
+      mkdir($dir.'/lib/Drupal/'.$module.'/Form');
+      mkdir($dir.'/lib/Drupal/'.$module.'/Plugin');
     }
   }
 }
