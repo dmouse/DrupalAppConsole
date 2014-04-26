@@ -14,6 +14,11 @@ class DrupalBootstrapHelper extends Helper
 {
 
   /**
+   * @var boolean
+   */
+  protected $isBoot;
+
+  /**
    * @param string $pathToBootstrapFile
    */
   public function bootstrapConfiguration($pathToBootstrapFile) 
@@ -33,6 +38,7 @@ class DrupalBootstrapHelper extends Helper
   public function bootstrapCode() 
   {
     \drupal_bootstrap(DRUPAL_BOOTSTRAP_CODE);
+    $this->isBoot = true;
   }
 
   public function getDrupalRoot()
@@ -43,6 +49,10 @@ class DrupalBootstrapHelper extends Helper
     else{
       return getcwd();
     }
+  }
+
+  public function isBoot(){
+    return $this->isBoot ? true:false;
   }
 
   /**
