@@ -8,13 +8,17 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
 abstract class ContainerAwareCommand extends Command implements ContainerAwareInterface {
 
+  /**
+   * @var Symfony\Component\DependencyInjection\ContainerInterface
+   */
   private $container;
 
   /**
    * @return ContainerInterface
    */
   protected function getContainer() {
-    if (null === $this->container) {
+    $boostrap = $this->getHelperSet()->get('bootstrap');
+    if (null === $this->container && $boostrap->isBoot()) {
       $this->container = $this->getApplication()->getKernel()->getContainer();
     }
 
@@ -36,19 +40,24 @@ abstract class ContainerAwareCommand extends Command implements ContainerAwareIn
   public function getModules($core = false) {
     // modules collection
     $modules = array();
-    //get all modules
-    $all_modules = \system_rebuild_module_data();
 
-    // Filter modules
-    foreach ($all_modules as $name => $filename) {
-      if ( !preg_match('/^core/',$filename->uri) && !$core){
-        array_push($modules, $name);
+    $boostrap = $this->getHelperSet()->get('bootstrap');
+    if ($boostrap->isBoot()){
+      //get all modules
+      $all_modules = \system_rebuild_module_data();
+
+      // Filter modules
+      foreach ($all_modules as $name => $filename) {
+        if ( !preg_match('/^core/',$filename->uri) && !$core){
+          array_push($modules, $name);
+        }
+        else if ($core){
+          array_push($modules, $name);
+        }
       }
-      else if ($core){
-        array_push($modules, $name);
-      }
+      return $modules;
     }
-    return $modules;
+    return [];
   }
 
   public function getServices() {

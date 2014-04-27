@@ -46,14 +46,16 @@ class GeneratorControllerCommand extends GeneratorCommand {
     $test = $input->getOption('test');
 
     $map_service = array();
-    foreach ($services as $service) {
-      $class = get_class($this->getContainer()->get($service));
-      $map_service[$service] = array(
-        'name'  => $service,
-        'machine_name' => str_replace('.', '_', $service),
-        'class' => $class,
-        'short' => end(explode('\\',$class))
-      );
+    if ($services){
+      foreach ($services as $service) {
+        $class = get_class($this->getContainer()->get($service));
+        $map_service[$service] = array(
+          'name'  => $service,
+          'machine_name' => str_replace('.', '_', $service),
+          'class' => $class,
+          'short' => end(explode('\\',$class))
+        );
+      }
     }
 
     $generator = $this->getGenerator();
@@ -80,9 +82,14 @@ class GeneratorControllerCommand extends GeneratorCommand {
     $modules = $this->getModules();
     $module = $d->askAndValidate(
       $output,
-      $dialog->getQuestion('Enter your module: '),
-      function($module) use ($modules){
-        return Validators::validateModuleExist($module, $modules);
+      $dialog->getQuestion('Enter your module',''),
+      function($module) use ($modules) {
+        if ($modules){
+          return Validators::validateModuleExist($module, $modules);
+        }
+        else {
+          return $module;
+        }
       },
       false,
       '',
@@ -103,6 +110,8 @@ class GeneratorControllerCommand extends GeneratorCommand {
     $input->setOption('test', $test);
 
     // Services
+    $boostrap = $this->getHelperSet()->get('bootstrap');
+    if ($boostrap->isBoot()) {
       // TODO: Create a method for this job
       if ($dialog->askConfirmation(
           $output,
@@ -114,7 +123,7 @@ class GeneratorControllerCommand extends GeneratorCommand {
         while(true){
           $service = $d->askAndValidate(
             $output,
-            $dialog->getQuestion(' Enter your service (optional): '),
+            $dialog->getQuestion(' Enter your service (optional)',''),
             function($service) use ($services){
               return Validators::validateServiceExist($service, $services);
             },
@@ -133,6 +142,7 @@ class GeneratorControllerCommand extends GeneratorCommand {
         }
         $input->setOption('services', $service_collection);
       }
+    }
 
     // Routing
     /**
