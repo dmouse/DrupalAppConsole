@@ -13,9 +13,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Drupal\AppConsole\Command\Validators;
 use Drupal\AppConsole\Generator\PluginBlockGenerator;
 
-class GeneratorPluginBlockCommand extends GeneratorCommand{
+class GeneratorPluginBlockCommand extends GeneratorCommand
+{
 
-  protected function configure() {
+  protected function configure() 
+  {
     $this
       ->setDefinition(array(
         new InputOption('module','',InputOption::VALUE_REQUIRED, 'The name of the module'),
@@ -34,7 +36,8 @@ class GeneratorPluginBlockCommand extends GeneratorCommand{
    * @param  OutputInterface $output [description]
    * @return [type]                  [description]
    */
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output) 
+  {
 
     $dialog = $this->getDialogHelper();
 
@@ -51,7 +54,7 @@ class GeneratorPluginBlockCommand extends GeneratorCommand{
     $services = $input->getOption('services');
 
     $map_service = [];
-    if (!empty($services)){
+    if (!empty($services)) {
       foreach ($services as $service) {
         $class = get_class($this->getContainer()->get($service));
         $map_service[$service] = array(
@@ -69,7 +72,8 @@ class GeneratorPluginBlockCommand extends GeneratorCommand{
     ;
   }
 
-  protected function interact(InputInterface $input, OutputInterface $output) {
+  protected function interact(InputInterface $input, OutputInterface $output) 
+  {
     $dialog = $this->getDialogHelper();
     $dialog->writeSection($output, 'Welcome to the Drupal Plugin Block generator');
 
@@ -77,13 +81,13 @@ class GeneratorPluginBlockCommand extends GeneratorCommand{
 
     // --module option
     $module = $input->getOption('module');
-    if (!$module){
+    if (!$module) {
       // Module names
       $modules = $this->getModules();
       $module = $helper_set->askAndValidate(
         $output,
         $dialog->getQuestion('Enter your module',''),
-        function($module) use ($modules){
+        function($module) use ($modules) {
           return Validators::validateModuleExist($module, $modules);
         },
         false,
@@ -96,7 +100,7 @@ class GeneratorPluginBlockCommand extends GeneratorCommand{
 
     // --name option
     $name = $input->getOption('name');
-    if (!$name){
+    if (!$name) {
       $name = $dialog->ask($output, $dialog->getQuestion('Enter the controller name', 'DefaultBlock'), 'DefaultBlock');
       $input->setOption('name', $name);
     }
@@ -123,11 +127,11 @@ class GeneratorPluginBlockCommand extends GeneratorCommand{
         ''
       ]);
 
-      while(true){
+      while(true) {
         $service = $helper_set->askAndValidate(
           $output,
           $dialog->getQuestion(' Enter your service',''),
-          function($service) use ($services){
+          function($service) use ($services) {
             return Validators::validateServiceExist($service, $services);
           },
           false,
@@ -148,7 +152,8 @@ class GeneratorPluginBlockCommand extends GeneratorCommand{
 
   }
 
-  protected function createGenerator() {
+  protected function createGenerator() 
+  {
     return new PluginBlockGenerator();
   }
 
