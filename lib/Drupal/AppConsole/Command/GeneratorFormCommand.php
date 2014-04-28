@@ -121,7 +121,6 @@ class GeneratorFormCommand extends GeneratorCommand {
         $path = $boostrap->getDrupalRoot() .'/'. $module;
       }
     }
-    print_r($path);
     $input->setOption('path', $path);
 
     // Add services
