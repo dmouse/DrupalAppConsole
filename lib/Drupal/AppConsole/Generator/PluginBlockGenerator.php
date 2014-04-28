@@ -6,7 +6,8 @@
 
 namespace Drupal\AppConsole\Generator;
 
-class PluginBlockGenerator extends Generator {
+class PluginBlockGenerator extends Generator 
+{
 
   /**
    * Generator Plugin Block
