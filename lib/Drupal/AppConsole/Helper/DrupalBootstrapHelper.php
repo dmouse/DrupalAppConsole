@@ -26,6 +26,7 @@ class DrupalBootstrapHelper extends Helper
     if ($pathToBootstrapFile){
       require_once $pathToBootstrapFile;
       \drupal_bootstrap(DRUPAL_BOOTSTRAP_CONFIGURATION);
+      $this->isBoot = true;
     }
   }
 

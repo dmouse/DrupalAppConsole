@@ -55,17 +55,19 @@ class Application extends BaseApplication {
   public function doRun(InputInterface $input, OutputInterface $output) 
   {
     $this->bootstrapDrupal($input, $output);
-    //$this->initDebug($input);
-    //$this->doKernelConfiguration();
+    $bootstrap = $this->getHelperSet()->get('bootstrap');
+    if($bootstrap->isBoot()){
+      $this->initDebug($input);
+      $this->doKernelConfiguration();
+    }
 
-    if (!$this->commandsRegistered) {
-      //$this->registerCommands();
+    if (!$this->commandsRegistered && $bootstrap->isBoot()) {
+      $this->registerCommands();
       $this->commandsRegistered = true;
     }
 
     if (true === $input->hasParameterOption(array('--shell', '-s'))) {
       $this->runShell($input);
-
       return 0;
     }
 
