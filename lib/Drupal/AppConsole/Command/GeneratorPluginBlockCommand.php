@@ -22,6 +22,7 @@ class GeneratorPluginBlockCommand extends GeneratorCommand
       ->setDefinition(array(
         new InputOption('module','',InputOption::VALUE_REQUIRED, 'The name of the module'),
         new InputOption('name','',InputOption::VALUE_OPTIONAL, 'Block name'),
+        new InputOption('path','',InputOption::VALUE_OPTIONAL, 'Path to the root module folder'),
         new InputOption('description','',InputOption::VALUE_OPTIONAL, 'Description block'),
         new InputOption('services','',InputOption::VALUE_OPTIONAL, 'Load services'),
       ))
@@ -52,6 +53,7 @@ class GeneratorPluginBlockCommand extends GeneratorCommand
     $name = $input->getOption('name');
     $description = $input->getOption('description');
     $services = $input->getOption('services');
+    $path = $input->getOption('path');
 
     $map_service = [];
     if (!empty($services)) {
@@ -68,7 +70,7 @@ class GeneratorPluginBlockCommand extends GeneratorCommand
 
     $this
       ->getGenerator()
-      ->generate($module, $name, $description, $map_service)
+      ->generate($module, $name, $path, $description, $map_service)
     ;
   }
 
@@ -78,6 +80,7 @@ class GeneratorPluginBlockCommand extends GeneratorCommand
     $dialog->writeSection($output, 'Welcome to the Drupal Plugin Block generator');
 
     $helper_set = $this->getHelperSet()->get('dialog');
+    $boostrap = $this->getHelperSet()->get('bootstrap');
 
     // --module option
     $module = $input->getOption('module');
@@ -88,14 +91,18 @@ class GeneratorPluginBlockCommand extends GeneratorCommand
         $output,
         $dialog->getQuestion('Enter your module',''),
         function($module) use ($modules) {
-          return Validators::validateModuleExist($module, $modules);
+          if ($modules) {
+            return Validators::validateModuleExist($module, $modules);
+          }
+          else {
+            return Validators::validateModuleName($module);
+          }
         },
         false,
         '',
         $modules
       );
     }
-
     $input->setOption('module', $module);
 
     // --name option
@@ -106,48 +113,63 @@ class GeneratorPluginBlockCommand extends GeneratorCommand
     }
     $input->setOption('name', $name);
 
+    // --description
     $description = $input->getOption('description');
     if (!$description) {
       $description = $dialog->ask($output, $dialog->getQuestion('Description', 'My Awesome Block'), 'My Awesome Block');
     }
     $input->setOption('description', $description);
 
-    // --services option
-    if ($dialog->askConfirmation(
-      $output,
-      $dialog->getQuestion('Do you like add service(s)', 'yes', '?'),
-      true
-    )) {
-      $service_collection = array();
-      $services = $this->getServices();
-      $output->writeln([
-        '',
-        'You can add some services, type the name or use keyup and keydown',
-        'This is optional, press <info>enter</info> to <info>continue</info>',
-        ''
-      ]);
-
-      while(true) {
-        $service = $helper_set->askAndValidate(
-          $output,
-          $dialog->getQuestion(' Enter your service',''),
-          function($service) use ($services) {
-            return Validators::validateServiceExist($service, $services);
-          },
-          false,
-          null,
-          $services
-        );
-
-        if ($service == null) {
-          break;
-        }
-        array_push($service_collection, $service);
-        $service_key = array_search($service, $services, true);
-        if ($service_key >= 0)
-          unset($services[$service_key]);
+    // --path
+    $path = $input->getOption('path');
+    if (!$path) {
+      if ($boostrap->isBoot()) {
+        $path = $boostrap->getDrupalRoot() ."/modules/". $module;
       }
-      $input->setOption('services', $service_collection);
+      else {
+        $path = $boostrap->getDrupalRoot() .'/'. $module;
+      }
+    }
+    $input->setOption('path', $path);
+
+    if ($boostrap->isBoot()) {
+      // --services option
+      if ($dialog->askConfirmation(
+        $output,
+        $dialog->getQuestion('Do you like add service(s)', 'yes', '?'),
+        true
+      )) {
+        $service_collection = array();
+        $services = $this->getServices();
+        $output->writeln([
+          '',
+          'You can add some services, type the name or use keyup and keydown',
+          'This is optional, press <info>enter</info> to <info>continue</info>',
+          ''
+        ]);
+
+        while(true) {
+          $service = $helper_set->askAndValidate(
+            $output,
+            $dialog->getQuestion(' Enter your service',''),
+            function($service) use ($services) {
+              return Validators::validateServiceExist($service, $services);
+            },
+            false,
+            null,
+            $services
+          );
+
+          if ($service == null) {
+            break;
+          }
+          array_push($service_collection, $service);
+          $service_key = array_search($service, $services, true);
+          if ($service_key >= 0)
+            unset($services[$service_key]);
+        }
+        $input->setOption('services', $service_collection);
+      }
     }
 
   }

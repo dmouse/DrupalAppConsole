@@ -14,9 +14,8 @@ class PluginBlockGenerator extends Generator {
    * @param  string $name     class name for plugin block
    * @param  array  $services list of services
    */
-  public function generate($module, $class_name, $description, $services) {
-
-    $path = DRUPAL_ROOT . '/' . drupal_get_path('module', $module);
+  public function generate($module, $class_name, $path, $description, $services) 
+  {
     $path_plugin = $path . '/lib/Drupal/' . $module . '/Plugin/Block';
 
     // set syntax for arguments
@@ -46,5 +45,4 @@ class PluginBlockGenerator extends Generator {
       $parameters
     );
   }
-
 }
