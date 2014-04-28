@@ -1,4 +1,8 @@
 <?php
+/**
+ * File content
+ * Drupal\AppConsole\Command\GeneratorFormCommand.
+ */
 namespace Drupal\AppConsole\Command;
 
 use Drupal\AppConsole\Command\GeneratorCommand;
@@ -21,6 +25,7 @@ class GeneratorFormCommand extends GeneratorCommand {
       ->setDefinition(array(
         new InputOption('module','',InputOption::VALUE_REQUIRED, 'The name of the module'),
         new InputOption('name','',InputOption::VALUE_OPTIONAL, 'Form name'),
+        new InputOption('path','',InputOption::VALUE_OPTIONAL, 'Path to the root module folder'),
         new InputOption('services','',InputOption::VALUE_OPTIONAL, 'Load services'),
         new InputOption('inputs','',InputOption::VALUE_OPTIONAL, 'Create a inputs in a form'),
         new InputOption('routing', '', InputOption::VALUE_NONE, 'Update routing'),
@@ -43,6 +48,7 @@ class GeneratorFormCommand extends GeneratorCommand {
     $services = $input->getOption('services');
     $update_routing = $input->getOption('routing');
     $class_name = $input->getOption('name');
+    $path = $input->getOption('path');
 
     // if exist form generate config file
     $inputs = $input->getOption('inputs');
@@ -61,11 +67,10 @@ class GeneratorFormCommand extends GeneratorCommand {
         }
     }
 
+    $errors = '';
     $generator = $this->getGenerator();
-    $generator->generate($module, $class_name, $map_service, $inputs, $update_routing);
-
+    $generator->generate($module, $class_name, $path, $map_service, $inputs, $update_routing);
     $dialog->writeGeneratorSummary($output, $errors);
-
   }
 
   /**
@@ -80,14 +85,20 @@ class GeneratorFormCommand extends GeneratorCommand {
     $dialog->writeSection($output, 'Welcome to the Drupal form generator');
 
     $d = $this->getHelperSet()->get('dialog');
+    $boostrap = $this->getHelperSet()->get('bootstrap');
 
     // Module name
     $modules = $this->getModules();
     $module = $d->askAndValidate(
       $output,
-      $dialog->getQuestion('Enter your module '),
+      $dialog->getQuestion('Enter your module',''),
       function($module) use ($modules){
-        return Validators::validateModuleExist($module, $modules);
+        if ($modules) {
+          return Validators::validateModuleExist($module, $modules);
+        }
+        else {
+          return Validators::validateModuleName($module);
+        }
       },
       false,
       '',
@@ -100,35 +111,50 @@ class GeneratorFormCommand extends GeneratorCommand {
     $name = $dialog->ask($output, $dialog->getQuestion('Enter the form name', 'DefaultForm'), 'DefaultForm');
     $input->setOption('name', $name);
 
-    // Add services
-    // TODO: Create a method for this job
-    if ($dialog->askConfirmation(
-      $output,
-      $dialog->getQuestion('Do you like add service(s)?', 'yes', '?'),
-      true
-    )) {
-      $service_collection = array();
-      $services = $this->getServices();
-      while(true){
-        $service = $d->askAndValidate(
-          $output,
-          $dialog->getQuestion('Enter your service (optional): '),
-          function($service) use ($services){
-            return Validators::validateServiceExist($service, $services);
-          },
-          false,
-          null,
-          $services
-        );
-        if ($service == null) {
-          break;
-        }
-        array_push($service_collection, $service);
-        $service_key = array_search($service, $services, true);
-        if ($service_key >= 0)
-          unset($services[$service_key]);
+    // path
+    $path = $input->getOption('path');
+    if (!$path) {
+      if ($boostrap->isBoot()) {
+        $path = $boostrap->getDrupalRoot() ."/modules/". $module;
       }
-      $input->setOption('services', $service_collection);
+      else {
+        $path = $boostrap->getDrupalRoot() .'/'. $module;
+      }
+    }
+    print_r($path);
+    $input->setOption('path', $path);
+
+    // Add services
+    if ($boostrap->isBoot()) {
+      // TODO: Create a method for this job
+      if ($dialog->askConfirmation(
+        $output,
+        $dialog->getQuestion('Do you like add service(s)?', 'yes', '?'),
+        true
+      )) {
+        $service_collection = array();
+        $services = $this->getServices();
+        while(true){
+          $service = $d->askAndValidate(
+            $output,
+            $dialog->getQuestion('Enter your service (optional)',''),
+            function($service) use ($services){
+              return Validators::validateServiceExist($service, $services);
+            },
+            false,
+            null,
+            $services
+          );
+          if ($service == null) {
+            break;
+          }
+          array_push($service_collection, $service);
+          $service_key = array_search($service, $services, true);
+          if ($service_key >= 0)
+            unset($services[$service_key]);
+        }
+        $input->setOption('services', $service_collection);
+      }
     }
 
     // Form fields
@@ -176,7 +202,7 @@ class GeneratorFormCommand extends GeneratorCommand {
         // TODO: validate
         $input_type = $d->askAndValidate(
           $output,
-          $dialog->getQuestion('  Type'),
+          $dialog->getQuestion('  Type',''),
           function($input) use ($input_types){
             return $input;
           },

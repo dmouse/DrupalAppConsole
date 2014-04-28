@@ -1,7 +1,9 @@
 <?php
-
+/**
+ * File content
+ * Drupal\AppConsole\Generator\FormGenerator.
+ */
 namespace Drupal\AppConsole\Generator;
-
 use Symfony\Component\DependencyInjection\Container;
 
 class FormGenerator extends Generator 
@@ -24,8 +26,8 @@ class FormGenerator extends Generator
       $parameters
     );
 
-    if ($update_routing)
+    if ($update_routing) {
       $this->renderFile('module/form-routing.yml.twig', $path .'/'. $module.'.routing.yml', $parameters, FILE_APPEND);
+    }
   }
-
 }
