@@ -41,7 +41,7 @@ class GeneratorControllerCommand extends GeneratorCommand {
     $dialog = $this->getDialogHelper();
 
     $module = $input->getOption('module');
-    $path   = $input->getOption('path');
+    $path = $input->getOption('path');
     $services = $input->getOption('services');
     $update_routing = $input->getOption('routing');
     $controller = $input->getOption('name');
@@ -90,7 +90,7 @@ class GeneratorControllerCommand extends GeneratorCommand {
           return Validators::validateModuleExist($module, $modules);
         }
         else {
-          Validators::validateModuleName($module);
+          return Validators::validateModuleName($module);
         }
       },
       false,
