@@ -4,14 +4,11 @@ namespace Drupal\AppConsole\Generator;
 
 use Symfony\Component\DependencyInjection\Container;
 
-class FormGenerator extends Generator {
+class FormGenerator extends Generator 
+{
 
-  public function __construct() {}
-
-    public function generate($module, $class_name, $services, $inputs, $update_routing) {
-
-    $path = DRUPAL_ROOT . '/' . drupal_get_path('module', $module);
-
+  public function generate($module, $class_name, $path, $services, $inputs, $update_routing) 
+  {
     $path_controller = $path . '/lib/Drupal/' . $module . '/Form';
 
     $parameters = array(
