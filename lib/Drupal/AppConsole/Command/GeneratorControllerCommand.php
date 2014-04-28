@@ -21,6 +21,7 @@ class GeneratorControllerCommand extends GeneratorCommand {
       ->setDefinition(array(
         new InputOption('module','',InputOption::VALUE_REQUIRED, 'The name of the module'),
         new InputOption('name','',InputOption::VALUE_OPTIONAL, 'Controller name'),
+        new InputOption('path','',InputOption::VALUE_OPTIONAL, 'Path to the root module folder'),
         new InputOption('services','',InputOption::VALUE_OPTIONAL, 'Load services'),
         new InputOption('routing', '', InputOption::VALUE_NONE, 'Update routing'),
         new InputOption('test', '', InputOption::VALUE_NONE, 'Generate test'),
@@ -40,9 +41,10 @@ class GeneratorControllerCommand extends GeneratorCommand {
     $dialog = $this->getDialogHelper();
 
     $module = $input->getOption('module');
+    $path   = $input->getOption('path');
     $services = $input->getOption('services');
     $update_routing = $input->getOption('routing');
-    $name = $input->getOption('name');
+    $controller = $input->getOption('name');
     $test = $input->getOption('test');
 
     $map_service = array();
@@ -58,10 +60,9 @@ class GeneratorControllerCommand extends GeneratorCommand {
       }
     }
 
+    $errors = '';
     $generator = $this->getGenerator();
-
-    $generator->generate($module, $name, $controller, $map_service, $test);
-
+    $generator->generate($module, $controller, $path, $map_service, $test);
     $dialog->writeGeneratorSummary($output, $errors);
   }
 
@@ -77,6 +78,7 @@ class GeneratorControllerCommand extends GeneratorCommand {
     $dialog->writeSection($output, 'Welcome to the Drupal controller generator');
 
     $d = $this->getHelperSet()->get('dialog');
+    $boostrap = $this->getHelperSet()->get('bootstrap');
 
     // Module name
     $modules = $this->getModules();
@@ -84,11 +86,11 @@ class GeneratorControllerCommand extends GeneratorCommand {
       $output,
       $dialog->getQuestion('Enter your module',''),
       function($module) use ($modules) {
-        if ($modules){
+        if ($modules) {
           return Validators::validateModuleExist($module, $modules);
         }
         else {
-          return $module;
+          Validators::validateModuleName($module);
         }
       },
       false,
@@ -102,6 +104,18 @@ class GeneratorControllerCommand extends GeneratorCommand {
     $name = $dialog->ask($output, $dialog->getQuestion('Enter the controller name', 'DefaultController'), 'DefaultController');
     $input->setOption('name', $name);
 
+    // path
+    $path = $input->getOption('path');
+    if (!$path) {
+      if ($boostrap->isBoot()) {
+        $path = $boostrap->getDrupalRoot() ."/modules/". $module;
+      }
+      else {
+        $path = $boostrap->getDrupalRoot() .'/'. $module;
+      }
+    }
+    $input->setOption('path', $path);
+    
     // Test
     $test = $input->getOption('test');
     if (!$test && $dialog->askConfirmation($output, $dialog->getQuestion('Generate Test Unit?', 'yes', '?'), TRUE)) {
@@ -110,7 +124,6 @@ class GeneratorControllerCommand extends GeneratorCommand {
     $input->setOption('test', $test);
 
     // Services
-    $boostrap = $this->getHelperSet()->get('bootstrap');
     if ($boostrap->isBoot()) {
       // TODO: Create a method for this job
       if ($dialog->askConfirmation(
