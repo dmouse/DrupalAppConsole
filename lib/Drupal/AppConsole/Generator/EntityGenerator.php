@@ -149,7 +149,7 @@ class EntityGenerator extends Generator {
         $menu_links_defaults_stmts = $parser->parse($parameters['menu_links_defaults']);
 
         // add your visitor
-        $traverser->addVisitor(new StmtNodeVisitor($parameters, $module . '_menu_links_defaults', $schema_stmts));
+        $traverser->addVisitor(new StmtNodeVisitor($parameters, $module . '_menu_links_defaults', $menu_links_defaults_stmts));
         $code_stmts = $traverser->traverse($code_stmts);
 
         $code = '<?php ' . $prettyPrinter->prettyPrint($code_stmts);
