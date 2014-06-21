@@ -14,6 +14,7 @@ use Drupal\AppConsole\Command\GeneratorControllerCommand;
 use Drupal\AppConsole\Command\GeneratorFormCommand;
 use Drupal\AppConsole\Command\GeneratorPluginBlockCommand;
 use Drupal\AppConsole\Command\GeneratorCommandCommand;
+use Drupal\AppConsole\Command\GeneratorProfileCommand;
 use Drupal\AppConsole\Command\DrushCommand;
 use Drupal\AppConsole\Command\GeneratorServiceCommand;
 use Symfony\Component\Console\Helper\HelperSet;
@@ -43,6 +44,7 @@ $application->addCommands([
   new GeneratorCommandCommand(),
   new DrushCommand(),
   new GeneratorServiceCommand(),
+  new GeneratorProfileCommand(),
 ]);
 
 $application->run();

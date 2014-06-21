@@ -1,0 +1,13 @@
+name: {{ name }}
+type: profile
+description: '{{ description }}'
+version: VERSION
+core: 8.x
+dependencies:
+{% for dependency in dependencies %}
+  - {{ dependency }}
+{% endfor %}
+themes:
+{% for theme in themes %}
+  - {{ theme }}
+{% endfor %}
