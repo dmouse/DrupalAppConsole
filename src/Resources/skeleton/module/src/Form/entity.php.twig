@@ -6,7 +6,6 @@
 
 namespace Drupal\{{ module }}\Form;
 
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityForm;
 
 class {{ entity_class }}Form extends EntityForm
@@ -61,6 +60,22 @@ class {{ entity_class }}Form extends EntityForm
         '%label' => ${{ entity_name }}->label(),
       )));
     }
-    $form_state['redirect'] = 'admin/config/system/{{ entity_name }}';
+    $form_state['redirect_route']['route_name'] = '{{ entity_name }}.list';
+  }
+
+  /**
+   * Check if the entity {{ entity_name }} exist.
+   *
+   * @param string $id
+   *   The entity ID
+   *
+   * @return bool
+   *   TRUE if the entity exist.
+   */
+  public function exist($id) {
+    $entity = $this->entityQuery->get('{{ entity_name }}')
+      ->condition('id', $id)
+      ->execute();
+    return (bool) $entity;
   }
 }
