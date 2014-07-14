@@ -7,9 +7,40 @@
 namespace Drupal\{{ module }}\Form;
 
 use Drupal\Core\Entity\EntityForm;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Entity\Query\QueryFactory;
 
+/**
+ * The {{ entity_class }} class definition.
+ */
 class {{ entity_class }}Form extends EntityForm
 {
+
+  /**
+   * The entity query factory.
+   *
+   * @var \Drupal\Core\Entity\Query\QueryFactory
+   */
+  protected $entityQuery;
+
+  /**
+   * Constructor.
+   *
+   * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query
+   *   The entity query.
+   */
+  public function __construct(QueryFactory $entity_query) {
+    $this->entityQuery = $entity_query;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity.query')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -32,7 +63,7 @@ class {{ entity_class }}Form extends EntityForm
       '#type' => 'machine_name',
       '#default_value' => ${{ entity_name }}->id(),
       '#machine_name' => array(
-        'exists' => '{{ entity_name }}_load',
+        'exists' => array($this, 'exist'),
       ),
       '#disabled' => !${{ entity_name }}->isNew(),
     );
@@ -43,8 +74,8 @@ class {{ entity_class }}Form extends EntityForm
   }
 
   /**
-  * {@inheritdoc}
-  */
+   * {@inheritdoc}
+   */
   public function save(array $form, array &$form_state)
   {
     ${{ entity_name }} = $this->entity;
