@@ -3,23 +3,17 @@ sudo: false
 language: php
 
 php:
-  - 5.6
-  - 7.0
+  - 7.0.8
   - 7.1
   - 7.2
   - 7.3
-  - 7.4snapshot
+  - 7.4
 
 services:
   - mysql
 
 matrix:
-  include:
-    - php: 5.5.9
-      dist: trusty
   fast_finish: true
-  allow_failures:
-    - php: 7.4snapshot
 
 env:
   global:
@@ -39,21 +33,12 @@ before_script:
   - phpenv config-rm xdebug.ini || true
 
   # Set variables.
-  - |
-      if [[ "$TRAVIS_PHP_VERSION" == "5.5.9" ]] || [[ "$TRAVIS_PHP_VERSION" == "5.6" ]]; then
-        export DRUPAL_BRANCH="8.6.x"
-        # PHP 5.5.9 on TravisCI has a Sqlite version that fails
-        # minimum requirements, so we install on MySql instead.
-        export SIMPLETEST_DB="mysql://root:@localhost/drupal_travis_db#drupalconsole"
-        export IMAGEMAGICK_MODULE="drupal/imagemagick:^2"
-      else
-        export DRUPAL_BRANCH="8.8.x"
-        export SIMPLETEST_DB="sqlite://localhost/sites/default/files/.ht.sqlite#drupalconsole"
-        export IMAGEMAGICK_MODULE="drupal/imagemagick:dev-3.x"
-      fi
+  - export DRUPAL_BRANCH="8.8.x"
+  - export SIMPLETEST_DB="sqlite://localhost/sites/default/files/.ht.sqlite#drupalconsole"
+  - export IMAGEMAGICK_MODULE="drupal/imagemagick"
 
   # Get Drupal via git, and install it via Composer.
-  - git clone --depth=5 --branch=$DRUPAL_BRANCH http://git.drupal.org/project/drupal.git $DRUPAL_PATH
+  - git clone --depth=1 --branch=$DRUPAL_BRANCH http://git.drupal.org/project/drupal.git $DRUPAL_PATH
   - cd $DRUPAL_PATH
   - composer install --no-progress --no-suggest
 
